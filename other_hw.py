@@ -19,7 +19,6 @@ def test_majority_element():
     assert result1 == 2
 
 
-# prjctr-hw
 test_majority_element()
 
 

@@ -7,4 +7,4 @@
     - other-works.py
 
 -  ### hw-8:
-    - ~~hats_on_cats.py~~
+    - hats_on_cats.py

@@ -5,9 +5,13 @@ def majority_element(nums: list) -> int:
             counter[item] += 1
         else:
             counter[item] = 0
-    for major, count in counter.items():
-        if count >= len(nums) // 2:
-            return major
+    x = 0
+    major = None
+    for i in counter:
+        if counter[i] > x:
+            x = counter[i]
+            major = i
+    return major
 
 
 def test_majority_element():

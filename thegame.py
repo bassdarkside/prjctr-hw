@@ -38,25 +38,22 @@ def ask_usr(country):
 
 
 def if_wrong(lifes, score, country, capital):
-    try:
-        letter = 1
+    letter = 1
+    lifes -= 1
+    while lifes != 0:
+        print(f"Wrong! {letter} letter is '{capital[:letter]}'")
+        display_lifes_left(lifes)
+        letter += 1
+        data = ask_usr(country)
+        if data == "Exit":
+            lifes = 0
+            return lifes, score
+        if data == capital:
+            score += 1
+            return lifes, score
         lifes -= 1
-        while lifes != 0:
-            print(f"Wrong! {letter} letter is '{capital[:letter]}'")
-            display_lifes_left(lifes)
-            letter += 1
-            data = ask_usr(country)
-            if data == "Exit":
-                lifes = 0
-                return lifes, score
-            if data == capital:
-                score += 1
-                return lifes, score
-            lifes -= 1
-        print("No more lifes left!")
-        return lifes, score
-    except Exception as e:
-        print(e)
+    print("No more lifes left!")
+    return lifes, score
 
 
 def display_lifes_left(lifes):
@@ -69,32 +66,26 @@ def main(lifes, score, countries):
         if not pair:
             return score
         ctr, caps = pair[0], pair[1]
-        try:
-            data = ask_usr(ctr)
-            if data == "Exit":
+        data = ask_usr(ctr)
+        if data == "Exit":
+            return score
+        if data == caps:
+            score += 1
+        else:
+            lifes, score = if_wrong(lifes, score, ctr, caps)
+            if lifes == 0:
                 return score
-            if data == caps:
-                score += 1
-            else:
-                lifes, score = if_wrong(lifes, score, ctr, caps)
-                if lifes == 0:
-                    return score
-            display_score(score)
-        except Exception as e:
-            print(e)
+        display_score(score)
     return score
 
 
 def randomizer(capitals_items: list) -> tuple:
-    try:
-        if not capitals_items:
-            print("No capitals left!")
-            return []
-        country_capital = random.choice(capitals_items)
-        capitals_items.remove(country_capital)
-        return country_capital
-    except UnboundLocalError as e:
-        print(e)
+    if not capitals_items:
+        print("No capitals left!")
+        return []
+    country_capital = random.choice(capitals_items)
+    capitals_items.remove(country_capital)
+    return country_capital
 
 
 def remove_symbols(usr_data):

@@ -1,4 +1,3 @@
-# Time complexity O(n^2)
 def loop(cats):
     all_cats = [True] * (cats + 1)
     for i in range(2, cats + 1):
@@ -9,5 +8,6 @@ def loop(cats):
     ]
 
 
+# Time complexity O(n * log n)
 cats_with_hats = loop(100)
 print(cats_with_hats)

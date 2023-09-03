@@ -21,9 +21,7 @@ def create_high_scores_csv(input_file, output_file):
     with open(output_file, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Player name", "Highest score"])
-
-        for player_name, highest_score in sort_hi_scores:
-            writer.writerow([player_name, highest_score])
+        writer.writerows(sort_hi_scores)
 
 
 input_file = "git_repo/hw-10/score.csv"

@@ -10,19 +10,13 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 def gif_request(keyword):
     GIPHY_KEY = config("GIPHY_KEY")
-    params = "&limit=1&offset=0&rating=r&lang=en"
-    end_point = "http://api.giphy.com/v1/gifs/search"
-    url = f"{end_point}?q={keyword}&api_key={GIPHY_KEY}{params}"
-    response = requests.get(url)
-    return response.json()
-
-
-def build_output(*args):
-    response = gif_request(*args)
-    res = ""
+    params = {"q": keyword, "api_key": GIPHY_KEY, "limit": 1, "rating": "r"}
+    url = "http://api.giphy.com/v1/gifs/search/"
+    response = requests.get(url, params=params).json()
+    results = ""
     for gif in response["data"]:
-        res += f"{gif['bitly_url']}\n"
-    return res
+        results += f"{gif['bitly_url']}\n"
+    return results
 
 
 @bot.message_handler(commands=["start", "main", "hello"])
@@ -47,7 +41,7 @@ def get_text_messages(message):
             reply_markup=markup,
         )
     elif message.text:
-        list_results = build_output(message.text.lower())
+        list_results = gif_request(message.text.lower())
         bot.send_message(message.from_user.id, "Here's what I found for you 👉")
         bot.send_message(
             message.from_user.id, f"{list_results}", parse_mode="Markdown"

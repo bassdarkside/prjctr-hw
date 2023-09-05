@@ -3,7 +3,7 @@ def is_admin(permission):
     def wrapper(**kwargs):
         key = list(kwargs.keys())[0]
         if kwargs[key] != "admin":
-            raise TypeError("Permission denied")
+            raise PermissionError("Permission denied")
         permission(**kwargs)
 
     return wrapper
@@ -45,10 +45,12 @@ some_function_with_risky_operation({"key": "bar"})
 
 # |                  --- 3 ---                  |
 def check_types(func):
+    params_annotations = func.__annotations__
+    params_keys = list(params_annotations.keys())
+
     def wrapper(*args, **kwargs):
-        params_annotations = func.__annotations__
         for i, arg in enumerate(args):
-            params_name = list(params_annotations.keys())[i]
+            params_name = params_keys[i]
             params_type = params_annotations.get(params_name)
             if not isinstance(arg, params_type):
                 type_def = str(params_type)[-5:-2]
@@ -57,7 +59,6 @@ def check_types(func):
                     f"Argument '{params_name}' must be {type_def}, not {type_}"
                 )
 
-        func(*args, **kwargs)
         return func(*args, **kwargs)
 
     return wrapper
@@ -68,5 +69,5 @@ def add(a: int, b: int) -> int:
     return a + b
 
 
-add(1, 2)
+print(add(1, 2))
 add("1", "2")

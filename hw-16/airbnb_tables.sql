@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(64) UNIQUE NOT NULL,
     email VARCHAR(64) UNIQUE NOT NULL,
-    password TEXT NOT NULL,
+    password VARCHAR(64) NOT NULL,
     phone VARCHAR(64) UNIQUE NOT NULL,
     description VARCHAR(300),
     created_at timestamp NOT NULL DEFAULT NOW(),
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS rooms (
     owner_id INT references users(id),
     name VARCHAR(64) UNIQUE NOT NULL,
     address VARCHAR(64) UNIQUE NOT NULL,
-    price INT NOT NULL,
+    price DECIMAL NOT NULL,
     total_guests SMALLINT NOT NULL,
     bedrooms SMALLINT NOT NULL,
     has_wifi BOOLEAN NOT NULL,
@@ -29,17 +29,16 @@ CREATE TABLE IF NOT EXISTS reservations (
     id SERIAL PRIMARY KEY,
     user_id INT references users(id),
     room_id INT references rooms(id),
-    price INT NOT NULL,
+    price DECIMAL NOT NULL,
     check_in DATE NOT NULL,
     check_out DATE NOT NULL,
-    total_price INT NOT NULL,
+    total_price DECIMAL NOT NULL,
     created_at timestamp NOT NULL DEFAULT NOW(),
     updaded_at timestamp NOT NULL DEFAULT NOW()
 );
 CREATE TABLE IF NOT EXISTS payments (
     id SERIAL PRIMARY KEY,
     reservation_id INT NOT NULL references reservations(id),
-    total_price INT NOT NULL,
     payment_ts timestamptz(3) NOT NULL DEFAULT NOW(),
     created_at timestamp NOT NULL DEFAULT NOW(),
     updaded_at timestamp NOT NULL DEFAULT NOW()
@@ -295,9 +294,7 @@ INSERT INTO reservations (
         total_price
     )
 VALUES (1, 2, 57, '2023-08-10', '2023-08-12', 114),
-    -- total_price = check_out - check_in
     (1, 2, 57, '2023-09-16', '2023-09-19', 171),
-    -- total_price = check_out - check_in
     (6, 1, 54, '2023-09-16', '2023-09-19', 162),
     (9, 3, 130, '2023-09-14', '2023-09-18', 520),
     (8, 5, 45, '2023-09-15', '2023-09-16', 45),
@@ -305,32 +302,19 @@ VALUES (1, 2, 57, '2023-08-10', '2023-08-12', 114),
     (2, 11, 100, '2023-08-10', '2023-08-12', 100),
     (2, 12, 100, '2023-08-10', '2023-08-12', 100),
     (2, 13, 100, '2023-09-16', '2023-09-19', 200);
-INSERT INTO payments (reservation_id, total_price)
-VALUES (3, 162),
-    (1, 114);
-(2, 171);
+INSERT INTO payments (reservation_id)
+VALUES (3),
+    (1),
+    (2);
 INSERT INTO reviews (payment_id, rating, comment)
-VALUES (
-        1,
-        5,
-        'It was wonderful experience the place is peaceful I recommend it if you want to relax and enjoy the nature and the host is so friendly and helpful ..'
-    ),
-    (
-        2,
-        5,
-        'It was wonderful experience the place is peaceful I recommend it!'
-    );
-(3, 5, 'I recommend it!');
+VALUES (1, 5, 'Relax and enjoy the nature.'),
+    (2, 5, 'It was wonderful!!'),
+    (3, 5, 'I recommend it!');
 SELECT username,
-    user_id,
-    count
-FROM users,
-    (
-        SELECT user_id,
-            COUNT(*) AS count
-        FROM reservations
-        GROUP BY user_id
-        ORDER BY count DESC
-        LIMIT 1
-    )
-WHERE users.id = user_id;
+    reservations.user_id
+FROM reservations
+    JOIN users ON users.id = reservations.user_id
+GROUP BY username,
+    user_id
+ORDER BY COUNT(*) DESC
+LIMIT 1;

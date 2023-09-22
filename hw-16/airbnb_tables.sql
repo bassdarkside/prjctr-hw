@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS reservations (
     id SERIAL PRIMARY KEY,
     user_id INT references users(id),
     room_id INT references rooms(id),
-    price DECIMAL NOT NULL,
     check_in DATE NOT NULL,
     check_out DATE NOT NULL,
     total_price DECIMAL NOT NULL,
@@ -288,20 +287,18 @@ VALUES (
 INSERT INTO reservations (
         user_id,
         room_id,
-        price,
-        check_in,
+        total_price check_in,
         check_out,
-        total_price
     )
-VALUES (1, 2, 57, '2023-08-10', '2023-08-12', 114),
-    (1, 2, 57, '2023-09-16', '2023-09-19', 171),
-    (6, 1, 54, '2023-09-16', '2023-09-19', 162),
-    (9, 3, 130, '2023-09-14', '2023-09-18', 520),
-    (8, 5, 45, '2023-09-15', '2023-09-16', 45),
-    (2, 10, 100, '2023-08-10', '2023-08-12', 100),
-    (2, 11, 100, '2023-08-10', '2023-08-12', 100),
-    (2, 12, 100, '2023-08-10', '2023-08-12', 100),
-    (2, 13, 100, '2023-09-16', '2023-09-19', 200);
+VALUES (1, 2, 114, '2023-08-10', '2023-08-12'),
+    (1, 2, 171, '2023-09-16', '2023-09-19'),
+    (6, 1, 162, '2023-09-16', '2023-09-19'),
+    (9, 3, 520, '2023-09-14', '2023-09-18'),
+    (8, 5, 45, '2023-09-15', '2023-09-16'),
+    (2, 10, 100, '2023-08-10', '2023-08-12'),
+    (2, 11, 100, '2023-08-10', '2023-08-12'),
+    (2, 12, 100, '2023-08-10', '2023-08-12'),
+    (2, 13, 200, '2023-09-16', '2023-09-19');
 INSERT INTO payments (reservation_id)
 VALUES (3),
     (1),
@@ -317,4 +314,15 @@ FROM reservations
 GROUP BY username,
     user_id
 ORDER BY COUNT(*) DESC
+LIMIT 1;
+SELECT u.id,
+    u.username
+FROM users u
+    JOIN rooms r ON u.id = r.owner_id
+    JOIN reservations rs ON r.id = rs.room_id
+    JOIN payments p ON rs.id = p.reservation_id
+WHERE p.payment_ts >= NOW() - INTERVAL '1 month'
+GROUP BY u.id,
+    u.username
+ORDER BY SUM(rs.total_price) DESC
 LIMIT 1;

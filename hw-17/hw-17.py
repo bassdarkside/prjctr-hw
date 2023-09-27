@@ -15,10 +15,6 @@ class Student(Base):
     name = Column(String(30), nullable=False)
     age = Column(Integer, nullable=False)
 
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-
     def __repr__(self):
         return (
             f"This is {self.student_id} student '{self.name}' Age: {self.age}"
@@ -32,10 +28,6 @@ class Subject(Base):
     name = Column(String(30), nullable=False)
     length = Column(String(30), nullable=False)
 
-    def __init__(self, name, length):
-        self.name = name
-        self.length = length
-
     def __repr__(self):
         return f"ID: {self.subject_id} subject: '{self.name}' lenght: '{self.length}'"
 
@@ -46,10 +38,6 @@ class StudentSubject(Base):
     student_subject_id = Column(Integer, primary_key=True)
     student_id = Column(Integer, ForeignKey("student.student_id"))
     subject_id = Column(Integer, ForeignKey("subject.subject_id"))
-
-    def __init__(self, student_id, subject_id):
-        self.student_id = student_id
-        self.subject_id = subject_id
 
     def __repr__(self):
         return f"student_id: {self.student_id} subject_id: {self.subject_id} id: {self.student_subject_id}"
